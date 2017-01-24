@@ -9,7 +9,7 @@
 
 <body>
 	<header>
-		<h1><b>Welcome to your home Page</b></h1>
+		<h1><b>Welcome</b></h1>
 	</header>
 	
 	<p>&nbsp</p>
