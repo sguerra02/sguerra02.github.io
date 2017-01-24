@@ -27,7 +27,7 @@ xmlhttp.onreadystatechange = function() {
 		document.getElementById("Temp").innerHTML = myObj.main.temp+"°F";
     }
 };                                               // add variable to zipcode and let user input the data
-xmlhttp.open("GET", "http://api.openweathermap.org/data/2.5/weather?zip=48189,us&units=imperial&appid=ab66ffebb81765cb2b81ecbc0a5516e8", true);
+xmlhttp.open("GET", "https://api.openweathermap.org/data/2.5/weather?zip=48189,us&units=imperial&appid=ab66ffebb81765cb2b81ecbc0a5516e8", true);
 xmlhttp.send();
 
 </script>
