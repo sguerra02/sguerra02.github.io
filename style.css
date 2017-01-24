@@ -18,3 +18,8 @@ header img {
   vertical-align: top;
   width: stretch;
 }
+
+body {
+    background-image: url("brushed_@2X.png");
+    background-repeat: repeat;
+}
