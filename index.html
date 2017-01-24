@@ -1,7 +1,39 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+	<title>Sguerra02-Github</title>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		
+</head>
+
 <body>
-<h1><b>Welcome to Sguerra02's github Page</b></h1>
-<p>This page is under construction.</p>
+	<header>
+		<h1><b>Welcome to your home Page</b></h1>
+	</header>
+	
+	<p>&nbsp</p>
+	<p>Current Temp in </p>
+<p id="Location">you are here</p>
+<p id="Temp">the temperature is </p>
+<p id="demo"></p>
+
+<script>                                                                     // API call and Json parse to get temperature for zipcode
+var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        myObj = JSON.parse(this.responseText);
+        document.getElementById("Location").innerHTML = myObj.name;
+		document.getElementById("Temp").innerHTML = myObj.main.temp+"°F";
+    }
+};                                               // add variable to zipcode and let user input the data
+xmlhttp.open("GET", "http://api.openweathermap.org/data/2.5/weather?zip=48189,us&units=imperial&appid=ab66ffebb81765cb2b81ecbc0a5516e8", true);
+xmlhttp.send();
+
+</script>
+
+
 </body>
+
+
 </html>
