@@ -1,0 +1,78 @@
+@import 'https://fonts.googleapis.com/css?family=Roboto:300,400,500';
+header h1 {
+  color: white;
+  font-size: 2.5em;
+  font-weight: 300;
+}
+
+header {
+  background-color: #263d36;
+  background-image: url("header.jpg");
+  background-position: stretch top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  line-height: 1.2;
+  padding: 10vw 2em;
+  text-align: center;
+  
+}
+
+header img {
+  display: inline-block;
+  height: 120px;
+  vertical-align: top;
+  width: stretch;
+}
+
+h2 {
+  margin-top: 1em;
+  padding-top: 1em;
+}
+
+h1,
+h2,
+strong {
+  color: #333;
+}
+
+code,
+pre {
+  background: #eee;
+}
+
+code {
+  padding: 2px 4px;
+  vertical-align: text-bottom;
+}
+
+pre {
+  padding: 1em;
+}
+
+body{
+	color: #555;
+
+	line-height: 1.5;
+	padding: 1em 4em;
+  
+	margin: 0 auto;
+	max-width: 70em;
+  
+	background: #feffff;
+	background: -moz-linear-gradient(left, #feffff 0%, #a0d8ef 60%, #a0d8ef 60%);
+	background: -webkit-linear-gradient(left, #feffff 0%,#a0d8ef 60%,#a0d8ef 60%);
+	background: linear-gradient(to right, #feffff 0%,#a0d8ef 60%,#a0d8ef 60%);
+	
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#feffff', endColorstr='#a0d8ef',GradientType=1 );
+	
+
+	font-family: "Helvetica", "Arial", sans-serif;
+
+}
+
+a:link{
+	color:orange;
+}
+a:visited{
+	color:purple;
+}
