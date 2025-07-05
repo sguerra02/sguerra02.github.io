@@ -1,16 +1,79 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Welcome!</title>
-  <link rel="stylesheet" href="main.css"> <!-- optional styling -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome | sguerra02.github.io</title>
+  <link rel="stylesheet" href="main.css">
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-...hash..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    /* Reset & body */
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: #f3f9f3;
+  color: #2c3e50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Container */
+.container {
+  text-align: center;
+  max-width: 600px;
+  padding: 40px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading */
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5em;
+}
+
+/* Paragraph */
+p {
+  font-size: 1.1rem;
+  margin-bottom: 2em;
+  color: #555;
+}
+
+/* Button styling */
+.button {
+  display: inline-block;
+  background-color: #2e7d32;
+  color: #fff;
+  text-decoration: none;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.button i {
+  margin-right: 10px;
+}
+
+.button:hover {
+  background-color: #1b5e20;
+}
+
+    </style>
 </head>
 <body>
-  <h1>Welcome to My Projects</h1>
-  <ul>
-    <li><a href="treelanelawncare.html">Tree Lane Lawn Care</a></li>
-    <!-- Add more links here -->
-  </ul>
+  <div class="container">
+    <h1>Welcome to Stephen Guerra's Project Landing Page</h1>
+    <p>This is a central hub for my public projects. Click below to view any websites.</p>
+
+    <a href="treelanelawncare.html" class="button">
+      <i class="fas fa-seedling"></i> View Tree Lane Lawn Care
+    </a>
+  </div>
 </body>
 </html>
