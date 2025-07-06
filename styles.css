@@ -1,28 +1,4 @@
 @import 'https://fonts.googleapis.com/css?family=Roboto:300,400,500';
-
-header {
-  background-color: #FFFFFF;
-  background-image: url("Header.svg");
-  background-position: stretch top;
-  background-repeat: no-repeat;
-  background-size: cover;
-  line-height: 1.2;
-  text-align: center;
-  
-}
-
-header img {
-  display: inline-block;
-  vertical-align: top;
-  width: stretch;
-}
-
-body {
-    background-image: url("brushed_@2X.png");
-    background-repeat: repeat;
-}
-
-
         *{
             margin: 0;
             padding: 0;
