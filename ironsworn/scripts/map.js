@@ -19,7 +19,7 @@ function initializeMapZoom() {
     mapWrapper.addEventListener('wheel', (e) => {
         e.preventDefault();
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        const newScale = Math.min(Math.max(0.5, scale + delta), 3);
+        const newScale = Math.min(Math.max(0.1, scale + delta), 5);
         
         // Calculate zoom center relative to map container
         const rect = mapWrapper.getBoundingClientRect();
@@ -115,7 +115,7 @@ function initializeMapZoom() {
             const currentDistance = getDistance(e.touches[0], e.touches[1]);
             const delta = (currentDistance - initialDistance) * 0.01;
             
-            const newScale = Math.min(Math.max(0.5, scale + delta), 3);
+            const newScale = Math.min(Math.max(0.1, scale + delta), 5);
             scale = newScale;
             
             updateMapTransform();
@@ -140,7 +140,7 @@ function initializeMapZoom() {
     });
 
     document.getElementById('zoom-out').addEventListener('click', () => {
-        scale = Math.max(scale - 0.1, 0.5);
+        scale = Math.max(scale - 0.1, 0.1);
         updateMapTransform();
         updateZoomInfo();
         updateMapScale();
@@ -290,6 +290,12 @@ function saveMarkers() {
 // Map event listeners
 function initializeMapEventListeners() {
     document.getElementById('add-marker-btn').addEventListener('click', () => {
+        if (isMeasuring) {
+            cancelMeasurement();
+        }
+        if (isColoringHexagon) {
+            cancelHexagonColoring();
+        }
         // Enable click-to-add mode
         mapContainer.style.cursor = 'crosshair';
         
@@ -313,6 +319,12 @@ function initializeMapEventListeners() {
     });
 
     document.getElementById('clear-markers-btn').addEventListener('click', () => {
+         if (isMeasuring) {
+           cancelMeasurement();
+        }
+        if (isColoringHexagon) {
+            cancelHexagonColoring();
+        }
         if (confirm('Are you sure you want to clear all markers? This cannot be undone.')) {
             markers = [];
             saveMarkers();
@@ -388,7 +400,60 @@ function initializeMapEventListeners() {
     });
 }
 
-// Measurement System
+// Initialize map when DOM is loaded
+// Update the initializeMap function to include hexagon system
+function initializeMap() {
+    // Wait for the map image to load before initializing scale and hexagons
+    mapImage.onload = function() {
+        console.log('Map image loaded:', {
+            naturalWidth: mapImage.naturalWidth,
+            naturalHeight: mapImage.naturalHeight,
+            clientWidth: mapImage.clientWidth,
+            clientHeight: mapImage.clientHeight
+        });
+        initializeMapZoom();
+        updateMapScale();
+        initializeHexagonSystem();
+    };
+    
+    // If image is already loaded (cached)
+    if (mapImage.complete) {
+        console.log('Map image already loaded:', {
+            naturalWidth: mapImage.naturalWidth,
+            naturalHeight: mapImage.naturalHeight
+        });
+        initializeMapZoom();
+        updateMapScale();
+        initializeHexagonSystem();
+    }
+    
+    initializeMapMarkers();
+    initializeMapEventListeners();
+    initializeMeasurementSystem();
+    updateZoomInfo();
+
+}
+
+// Update scale when window resizes
+window.addEventListener('resize', () => {
+    updateMapScale();
+});
+
+// Export functions for use in other files
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        initializeMap,
+        markers,
+        currentMarker,
+        addMarkerToMap,
+        saveMarkers
+    };
+}
+
+
+/* -----------------------------
+    Measurement System
+------------------------------*/
 let isMeasuring = false;
 let measurementPoints = [];
 let currentMeasurement = null;
@@ -402,6 +467,9 @@ function initializeMeasurementSystem() {
 }
 
 function startMeasurement() {
+    if (isColoringHexagon) {
+        cancelHexagonColoring();
+    }
     if (isMeasuring) {
         cancelMeasurement();
         return;
@@ -614,73 +682,15 @@ function hideMeasurementInstructions() {
     }
 }
 
-// Update the initializeMap function to include measurement system
-function initializeMap() {
-    // Wait for the map image to load before initializing scale
-    mapImage.onload = function() {
-        initializeMapZoom();
-        updateMapScale();
-    };
-    
-    // If image is already loaded (cached)
-    if (mapImage.complete) {
-        initializeMapZoom();
-        updateMapScale();
-    }
-    
-    initializeMapMarkers();
-    initializeMapEventListeners();
-    initializeMeasurementSystem(); // Add this line
-    updateZoomInfo();
-}
-
-// Update the add marker button to cancel measurement if active
-// Add this to the existing add marker event listener
-document.getElementById('add-marker-btn').addEventListener('click', () => {
-    // Cancel any active measurement
-    if (isMeasuring) {
-        cancelMeasurement();
-    }
-    
-    // ... rest of existing code for adding markers
-});
-
-// Update the clear markers button to also clear measurements
-document.getElementById('clear-markers-btn').addEventListener('click', () => {
-    // Clear any active measurement
-    if (isMeasuring) {
-        cancelMeasurement();
-    }
-    
-    // ... rest of existing code for clearing markers
-});
-
-// Initialize map when DOM is loaded
-function initializeMap() {
-    // Wait for the map image to load before initializing scale
-    mapImage.onload = function() {
-        initializeMapZoom();
-        updateMapScale();
-    };
-    
-    // If image is already loaded (cached)
-    if (mapImage.complete) {
-        initializeMapZoom();
-        updateMapScale();
-    }
-    
-    initializeMapMarkers();
-    initializeMapEventListeners();
-    updateZoomInfo();
-}
-
-// Hexagon Grid System
+/* -----------------------------
+    Hexagon Grid System 
+------------------------------*/
 let isColoringHexagon = false;
 let coloredHexagons = JSON.parse(localStorage.getItem('ironswornColoredHexagons')) || [];
 let currentHexagon = null;
 const HEX_RADIUS = 12.5; // 25px diameter / 2
-const HEX_WIDTH = 25;
-const HEX_HEIGHT = 21.65; // height = sqrt(3) * radius
+const HEX_WIDTH = 25; // Flat-topped hex width
+const HEX_HEIGHT = 21.65; // height = sqrt(3) * radius = 21.65
 
 function initializeHexagonSystem() {
     const colorHexagonBtn = document.getElementById('color-hexagon-btn');
@@ -706,9 +716,6 @@ function drawHexagonGrid() {
     svg.style.left = '0';
     svg.style.pointerEvents = 'none';
     
-    // Draw hexagon grid (optional - for visualization)
-    // drawHexagonGridOverlay(svg);
-    
     // Draw colored hexagons
     coloredHexagons.forEach(hex => {
         drawHexagon(svg, hex.q, hex.r, true);
@@ -728,6 +735,7 @@ function drawHexagonGridOverlay(svg) {
         }
     }
 }
+
 
 function drawHexagon(svg, q, r, isColored) {
     const center = hexToPixel(q, r);
@@ -750,7 +758,7 @@ function drawHexagon(svg, q, r, isColored) {
 function calculateHexagonPoints(centerX, centerY) {
     const points = [];
     for (let i = 0; i < 6; i++) {
-        const angle = 2 * Math.PI / 6 * i;
+        const angle = 2 * Math.PI / 6 * i - Math.PI / 6; // Offset for flat-topped
         const x = centerX + HEX_RADIUS * Math.cos(angle);
         const y = centerY + HEX_RADIUS * Math.sin(angle);
         points.push(`${x},${y}`);
@@ -759,15 +767,34 @@ function calculateHexagonPoints(centerX, centerY) {
 }
 
 function hexToPixel(q, r) {
+    // Flat-topped hexagon layout
     const x = HEX_WIDTH * 0.75 * q;
     const y = HEX_HEIGHT * (r + 0.5 * (q % 2));
     return { x, y };
 }
 
 function pixelToHex(x, y) {
-    // Convert pixel coordinates to hex coordinates
-    const q = Math.floor(x / (HEX_WIDTH * 0.75));
-    const r = Math.floor((y - (q % 2) * HEX_HEIGHT * 0.5) / HEX_HEIGHT);
+    // Convert to fractional hex coordinates
+    const qf = (x * 2/3) / HEX_RADIUS;
+    const rf = (-x / 3 + Math.sqrt(3)/3 * y) / HEX_RADIUS;
+    
+    // Convert to axial coordinates using cube coordinates and rounding
+    const sf = -qf - rf;
+    
+    let q = Math.round(qf);
+    let r = Math.round(rf);
+    let s = Math.round(sf);
+    
+    const q_diff = Math.abs(q - qf);
+    const r_diff = Math.abs(r - rf);
+    const s_diff = Math.abs(s - sf);
+    
+    if (q_diff > r_diff && q_diff > s_diff) {
+        q = -r - s;
+    } else if (r_diff > s_diff) {
+        r = -q - s;
+    }
+    // else s is already correct
     
     return { q, r };
 }
@@ -790,13 +817,22 @@ function toggleHexagonColoring() {
     
     // Set up click handler for hexagon selection
     const clickHandler = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const rect = mapContainer.getBoundingClientRect();
         const scrollX = mapWrapper.scrollLeft;
         const scrollY = mapWrapper.scrollTop;
         
-        // Calculate position relative to the scaled map in image coordinates
-        const imageX = ((e.clientX - rect.left + scrollX) / (rect.width * scale)) * mapImage.naturalWidth;
-        const imageY = ((e.clientY - rect.top + scrollY) / (rect.height * scale)) * mapImage.naturalHeight;
+        // Calculate position in the actual image coordinates
+        const containerX = e.clientX - rect.left + scrollX;
+        const containerY = e.clientY - rect.top + scrollY;
+        
+        // Convert to image coordinates (accounting for scale)
+        const imageX = (containerX / scale);
+        const imageY = (containerY / scale);
+        
+        console.log('Click at:', { containerX, containerY, imageX, imageY, scale });
         
         selectHexagon(imageX, imageY);
     };
@@ -810,7 +846,10 @@ function toggleHexagonColoring() {
 }
 
 function selectHexagon(x, y) {
+    console.log('Selecting hexagon at image coordinates:', { x, y });
+    
     const hexCoords = pixelToHex(x, y);
+    console.log('Hex coordinates:', hexCoords);
     
     // Check if this hexagon is already colored
     const existingIndex = coloredHexagons.findIndex(hex => 
@@ -820,9 +859,11 @@ function selectHexagon(x, y) {
     if (existingIndex === -1) {
         // Add new colored hexagon
         coloredHexagons.push(hexCoords);
+        console.log('Added hexagon:', hexCoords);
     } else {
         // Remove existing colored hexagon
         coloredHexagons.splice(existingIndex, 1);
+        console.log('Removed hexagon:', hexCoords);
     }
     
     saveColoredHexagons();
@@ -914,70 +955,11 @@ function hideHexagonInstructions() {
     }
 }
 
-// Update the initializeMap function to include hexagon system
-function initializeMap() {
-    // Wait for the map image to load before initializing scale and hexagons
-    mapImage.onload = function() {
-        initializeMapZoom();
-        updateMapScale();
-        initializeHexagonSystem(); // Add this line
-    };
-    
-    // If image is already loaded (cached)
-    if (mapImage.complete) {
-        initializeMapZoom();
-        updateMapScale();
-        initializeHexagonSystem(); // Add this line
-    }
-    
-    initializeMapMarkers();
-    initializeMapEventListeners();
-    initializeMeasurementSystem();
-    updateZoomInfo();
-}
 
-// Update the add marker button to cancel hexagon coloring if active
-document.getElementById('add-marker-btn').addEventListener('click', () => {
-    // Cancel any active hexagon coloring
-    if (isColoringHexagon) {
-        cancelHexagonColoring();
-    }
-    
-    // ... rest of existing code for adding markers
-});
-
-// Update the measurement button to cancel hexagon coloring if active
-document.getElementById('measure-distance-btn').addEventListener('click', () => {
-    // Cancel any active hexagon coloring
-    if (isColoringHexagon) {
-        cancelHexagonColoring();
-    }
-    
-    // ... rest of existing measurement code
-});
-
-// Update the clear markers button to also maintain hexagon state
-document.getElementById('clear-markers-btn').addEventListener('click', () => {
-    // Clear any active hexagon coloring
-    if (isColoringHexagon) {
-        cancelHexagonColoring();
-    }
-    
-    // ... rest of existing code for clearing markers
-});
-
-// Update scale when window resizes
-window.addEventListener('resize', () => {
-    updateMapScale();
-});
-
-// Export functions for use in other files
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        initializeMap,
-        markers,
-        currentMarker,
-        addMarkerToMap,
-        saveMarkers
-    };
+// Debug function to test hexagon coordinates
+function debugHexagonAt(x, y) {
+    const hexCoords = pixelToHex(x, y);
+    const pixelCoords = hexToPixel(hexCoords.q, hexCoords.r);
+    console.log('Debug:', { x, y, hexCoords, pixelCoords });
+    return hexCoords;
 }

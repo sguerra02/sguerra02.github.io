@@ -216,6 +216,7 @@ function initializeCharactersList() {
 
 function updateCharacterLocationDropdown() {
     const locationDropdown = document.getElementById('character-location');
+    if(!locationDropdown) return;
     locationDropdown.innerHTML = '<option value="">None</option>';
     
     locations.forEach(location => {
