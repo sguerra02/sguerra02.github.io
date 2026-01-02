@@ -11,17 +11,6 @@ let characters = JSON.parse(localStorage.getItem('ironswornCharacters')) || [
         details: 'Burly man with soot-stained hands and a warm smile. Always has a story to tell.',
         backstory: 'Former Ironlander soldier who lost his family in a raider attack. Now dedicates his life to protecting his new community.',
         notes: 'Can craft quality weapons and armor. Knows much about the local region.'
-    },
-    {
-        id: '2',
-        name: 'Morwen the Shadowed',
-        role: 'neutral',
-        disposition: 'suspicious',
-        location: '',
-        goal: 'Gather information and maintain her network of spies',
-        details: 'Slender woman with sharp eyes and quiet movements. Dresses in dark, practical clothing.',
-        backstory: 'Exiled from her clan for uncovering secrets they wanted buried.',
-        notes: 'Has information about the old ruins to the north. Will trade secrets for favors.'
     }
 ];
 let currentCharacter = null;

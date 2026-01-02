@@ -848,7 +848,7 @@ function toggleHexagonColoring() {
 function selectHexagon(x, y) {
     console.log('Selecting hexagon at image coordinates:', { x, y });
     
-    const hexCoords = pixelToHex(x, y);
+    const hexCoords = pixelToHex(x*scale, y*scale);
     console.log('Hex coordinates:', hexCoords);
     
     // Check if this hexagon is already colored
